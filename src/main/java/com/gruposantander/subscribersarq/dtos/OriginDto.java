@@ -17,5 +17,10 @@ public class OriginDto {
 	private String hash;
 
 	private String uri;
+	
+	@Override
+    public String toString() {
+        return "[hash=" + hash + ", uri=" + uri + "]";
+    }
 
 }

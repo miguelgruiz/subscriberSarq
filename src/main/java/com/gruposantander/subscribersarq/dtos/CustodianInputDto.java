@@ -18,4 +18,9 @@ public class CustodianInputDto extends CustodianOutputDto {
 
 	private List<OriginDto> origins;
 	
+	@Override
+    public String toString() {
+        return "CustodianInputDto [hash=" + getHash() + ", uri=" + getUri() + ", proc=" + getProc() + ", version=" + getVersion() + ", comment=" + getComment() + ", origins=" + origins + "]";
+    }
+	
 }

@@ -2,7 +2,7 @@ package com.gruposantander.subscribersarq.config;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.apache.log4j.LogManager;
+import org.apache.logging.log4j.LogManager;
 import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.annotation.*;
 import org.springframework.context.annotation.Profile;

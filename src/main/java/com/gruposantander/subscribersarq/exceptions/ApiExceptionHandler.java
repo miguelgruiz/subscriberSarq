@@ -28,7 +28,8 @@ public class ApiExceptionHandler {
 	@ExceptionHandler({BadRequestException.class, org.springframework.dao.DuplicateKeyException.class, FieldInvalidException.class, 
 			org.springframework.web.HttpRequestMethodNotSupportedException.class,
 			org.springframework.web.bind.MethodArgumentNotValidException.class,
-			org.springframework.http.converter.HttpMessageNotReadableException.class,})
+			org.springframework.http.converter.HttpMessageNotReadableException.class,
+			org.apache.kafka.common.errors.SerializationException.class,})
 	@ResponseBody
 	public ErrorMessage badRequest(HttpServletRequest request, Exception exception) {
 		log.error(exception.getMessage());

@@ -24,5 +24,5 @@ public class CustodianOutputDto {
 	private String version;
 
 	private String comment;
-
+	
 }
