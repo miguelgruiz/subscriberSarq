@@ -15,14 +15,14 @@ import lombok.experimental.SuperBuilder;
 @JsonInclude(Include.NON_NULL)
 public class CustodianOutputDto {
 	
-	private String hash;
+	protected String hash;
 
-	private String uri;
+	protected String uri;
 
-	private String proc;
+	protected String proc;
 
-	private String version;
+	protected String version;
 
-	private String comment;
+	protected String comment;
 
 }
