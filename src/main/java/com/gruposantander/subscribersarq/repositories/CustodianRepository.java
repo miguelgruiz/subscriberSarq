@@ -6,4 +6,5 @@ import com.gruposantander.subscribersarq.models.Custodian;
 
 public interface CustodianRepository extends JpaRepository<Custodian, Integer> {
 
+	Custodian findByHashAndUri(String hash, String uri);
 }

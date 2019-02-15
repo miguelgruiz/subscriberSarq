@@ -9,10 +9,7 @@ import com.gruposantander.subscribersarq.channels.SubscriberChannel;
 import com.gruposantander.subscribersarq.dtos.CustodianInputDto;
 import com.gruposantander.subscribersarq.services.SubscriberService;
 
-import lombok.extern.slf4j.Slf4j;
-
 @Component
-@Slf4j
 public class SubscriberListener {
 
 	@Autowired
@@ -20,8 +17,7 @@ public class SubscriberListener {
 
 	@StreamListener(SubscriberChannel.INPUT)
 	public void subscribe(@Payload CustodianInputDto custodianInputDto) {
-		log.info(custodianInputDto.toString());
-		this.subscriberService.saveCustodian(custodianInputDto);
+		this.subscriberService.saveCustodianLineage(custodianInputDto);
 	}
 
 }
