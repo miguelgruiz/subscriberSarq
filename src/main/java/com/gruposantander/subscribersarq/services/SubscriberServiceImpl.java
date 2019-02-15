@@ -15,9 +15,11 @@ public class SubscriberServiceImpl implements SubscriberService {
 	LineageService LineageService;
 	
 	@Override
-	public void saveCustodian(CustodianInputDto custodianInputDto) {
-		this.custodianService.saveCustodian(custodianInputDto);
-		this.LineageService.saveLineage(custodianInputDto);
+	public void saveCustodianLineage(CustodianInputDto custodianInputDto) {
+		if(!this.custodianService.existCustodian(custodianInputDto.getHash(), custodianInputDto.getUri())) {
+			this.custodianService.saveCustodian(custodianInputDto);
+			this.LineageService.saveLineage(custodianInputDto);
+		}
 	}
 	
 }

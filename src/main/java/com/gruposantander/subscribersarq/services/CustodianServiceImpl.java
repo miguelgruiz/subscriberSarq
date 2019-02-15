@@ -20,4 +20,9 @@ public class CustodianServiceImpl implements CustodianService {
 	public void saveCustodian(CustodianInputDto custodianInputDto) {
 		this.custodianRepository.save(mapperCustodianInputDtoToCustodian.mapper(custodianInputDto));
 	}
+	
+	@Override
+	public boolean existCustodian(String hash, String uri) {
+		return this.custodianRepository.findByHashAndUri(hash, uri) != null;
+	}
 }
