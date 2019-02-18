@@ -1,26 +1,33 @@
 package com.gruposantander.subscribersarq.models;
 
+import java.util.Date;
+
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-
-import javax.persistence.*;
-import java.io.Serializable;
-import java.util.Date;
 
 @Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-@IdClass(Custodian.IdClass.class)
 public class Custodian {
 
 	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	private Integer id;
+	
 	private String hash;
 
-	@Id
 	private String uri;
 
 	private String proc;
@@ -32,10 +39,5 @@ public class Custodian {
 	private Date timestamp;
 
 	private String comment;
-
-	@Data
-	static class IdClass implements Serializable {
-		private String hash;
-		private String uri;
-	}
+	
 }
