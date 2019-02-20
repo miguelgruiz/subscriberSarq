@@ -13,18 +13,13 @@ import com.gruposantander.subscribersarq.repositories.LineageRepository;
 
 @Service
 public class LineageServiceImpl implements LineageService {
-	
+
 	@Autowired
 	LineageRepository lineageRepository;
-	
+
 	@Override
-	public void saveLineage(CustodianInputDto custodianInputDto) {
-		List<Lineage> listLineage =  new ArrayList<Lineage>();
-		List<OriginDto> listOriginDto = custodianInputDto.getOrigins();
-		for(OriginDto originDto : listOriginDto){
-			listLineage.add(Lineage.builder().hash(custodianInputDto.getHash()).uri(custodianInputDto.getUri()).hashOrigin(originDto.getHash()).uriOrigin(originDto.getUri()).build());
-		}
-		this.lineageRepository.saveAll(listLineage);
+	public Lineage save(Lineage lineage) {
+		return this.lineageRepository.save(lineage);
 	}
 
 }

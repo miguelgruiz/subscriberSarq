@@ -8,7 +8,7 @@ import org.aspectj.lang.annotation.*;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 
-@Profile("dev")
+@Profile({"dev", "test"})
 @Component
 @Aspect
 public class ApiLogs {
@@ -27,7 +27,7 @@ public class ApiLogs {
 		}
 		LogManager.getLogger(jp.getSignature().getDeclaringTypeName()).info(log);
 	}
-	
+
 	@AfterReturning(pointcut = "allResources()", returning = "result")
 	public void apiResponseLog(JoinPoint jp, Object result) {
 		ObjectMapper mapper = new ObjectMapper();
@@ -46,8 +46,9 @@ public class ApiLogs {
 
 	@AfterThrowing(pointcut = "allResources()", throwing = "exception")
 	public void apiResponseExceptionLog(JoinPoint jp, Exception exception) {
-		String log = "<<< Return Exception << " + jp.getSignature().getName() + ": " + exception.getClass().getSimpleName() + "->"
-				+ exception.getMessage();
+		String log =
+				"<<< Return Exception << " + jp.getSignature().getName() + ": " + exception.getClass().getSimpleName() + "->" + exception
+						.getMessage();
 		LogManager.getLogger(jp.getSignature().getDeclaringTypeName()).info(log);
 	}
 

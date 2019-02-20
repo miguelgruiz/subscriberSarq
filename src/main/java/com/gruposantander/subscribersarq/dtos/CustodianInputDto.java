@@ -1,13 +1,12 @@
 package com.gruposantander.subscribersarq.dtos;
 
-import java.util.List;
-
 import com.fasterxml.jackson.annotation.JsonInclude;
-
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
+
+import java.util.List;
 
 @Data
 @SuperBuilder
@@ -16,6 +15,6 @@ import lombok.experimental.SuperBuilder;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class CustodianInputDto extends CustodianOutputDto {
 
-	private List<OriginDto> origins;
-	
+	private List<OriginDto> originDtoList;
+
 }
