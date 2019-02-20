@@ -4,5 +4,5 @@ import com.gruposantander.subscribersarq.dtos.CustodianInputDto;
 
 public interface SubscriberService {
 
-	void saveCustodianLineage(CustodianInputDto custodianInputDto);
+	void saveLineagesCustodian(CustodianInputDto custodianInputDto);
 }

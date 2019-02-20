@@ -20,7 +20,7 @@ public class SubscriberServiceImpl implements SubscriberService {
 	LineageService lineageService;
 	
 	@Override
-	public void saveCustodianLineage(CustodianInputDto custodianInputDto) {
+	public void saveLineagesCustodian(CustodianInputDto custodianInputDto) {
 		this.custodianService.save(custodianInputDto);
 		List<OriginDto> originDtoList = custodianInputDto.getOriginDtoList();
 		for (OriginDto originDto: originDtoList) {
