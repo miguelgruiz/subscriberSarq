@@ -30,7 +30,7 @@ public class SubscriberServiceIT {
 		OriginDto originDto1 = OriginDto.builder().hash("0000001").uri("http://ejemplo1.es").build();
 		OriginDto originDto2 = OriginDto.builder().hash("0000002").uri("http://ejemplo2.es").build();
 		CustodianInputDto custodianInputDto = CustodianInputDto.builder().hash("0000003").uri("http://ejemplo3.es").proc("P3")
-				.version("v3.11.0").comment("Esto es un comentario").originDtoList(Arrays.asList(originDto1, originDto2)).build();
+				.version("v3.11.0").comment("Esto es un comentario").origins(Arrays.asList(originDto1, originDto2)).build();
 		this.subscriberService.saveLineagesCustodian(custodianInputDto);
 		// TO-DO Comprobar bien que hay 1 custodian y 2 lineages en base de datos...
 	}

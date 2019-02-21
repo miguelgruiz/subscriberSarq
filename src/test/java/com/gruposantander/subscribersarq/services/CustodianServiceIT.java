@@ -28,7 +28,7 @@ public class CustodianServiceIT {
 	public void testSave() {
 		OriginDto originDto = OriginDto.builder().hash("0000001").uri("http://ejemplo1.es").build();
 		CustodianInputDto custodianInputDto = CustodianInputDto.builder().hash("0000002").uri("http://ejemplo2.es").proc("P2")
-				.version("v2.3.l8").comment("Esto es un comentario").originDtoList(Arrays.asList(originDto)).build();
+				.version("v2.3.l8").comment("Esto es un comentario").origins(Arrays.asList(originDto)).build();
 		Custodian custodian = this.custodianService.save(custodianInputDto);
 		assertNotNull(custodian);
 		this.custodianRepository.deleteById(custodian.getId());

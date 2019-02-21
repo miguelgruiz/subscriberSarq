@@ -22,7 +22,7 @@ public class SubscriberServiceImpl implements SubscriberService {
 	@Override
 	public void saveLineagesCustodian(CustodianInputDto custodianInputDto) {
 		this.custodianService.save(custodianInputDto);
-		List<OriginDto> originDtoList = custodianInputDto.getOriginDtoList();
+		List<OriginDto> originDtoList = custodianInputDto.getOrigins();
 		for (OriginDto originDto: originDtoList) {
 			Lineage lineage = Lineage.builder().hash(custodianInputDto.getHash()).hashOrigin(originDto.getHash()).uri(custodianInputDto.getUri())
 					.uriOrigin(originDto.getUri()).build();

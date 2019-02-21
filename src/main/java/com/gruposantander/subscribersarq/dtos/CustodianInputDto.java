@@ -15,6 +15,6 @@ import java.util.List;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class CustodianInputDto extends CustodianOutputDto {
 
-	private List<OriginDto> originDtoList;
+	private List<OriginDto> origins;
 
 }
