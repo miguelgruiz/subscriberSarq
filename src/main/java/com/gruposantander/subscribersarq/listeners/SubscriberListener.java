@@ -16,7 +16,7 @@ public class SubscriberListener {
 
 	@StreamListener(SubscriberChannel.INPUT)
 	public void subscribe(@Payload CustodianInputDto custodianInputDto) {
-		this.subscriberService.saveLineagesCustodian(custodianInputDto);
+		this.subscriberService.saveCustodianLineages(custodianInputDto);
 	}
 
 }

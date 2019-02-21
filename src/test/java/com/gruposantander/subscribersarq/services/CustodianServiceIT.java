@@ -1,18 +1,16 @@
 package com.gruposantander.subscribersarq.services;
 
-import com.gruposantander.subscribersarq.dtos.CustodianInputDto;
-import com.gruposantander.subscribersarq.dtos.OriginDto;
-import com.gruposantander.subscribersarq.models.Custodian;
-import com.gruposantander.subscribersarq.repositories.CustodianRepository;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 
-import java.util.Arrays;
-
-import static org.junit.Assert.assertNotNull;
+import com.gruposantander.subscribersarq.models.Custodian;
+import com.gruposantander.subscribersarq.repositories.CustodianRepository;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
@@ -26,11 +24,16 @@ public class CustodianServiceIT {
 
 	@Test
 	public void testSave() {
-		OriginDto originDto = OriginDto.builder().hash("0000001").uri("http://ejemplo1.es").build();
-		CustodianInputDto custodianInputDto = CustodianInputDto.builder().hash("0000002").uri("http://ejemplo2.es").proc("P2")
-				.version("v2.3.l8").comment("Esto es un comentario").origins(Arrays.asList(originDto)).build();
-		Custodian custodian = this.custodianService.save(custodianInputDto);
+		
+		Custodian custodianMock = Custodian.builder().hash("0000002").uri("http://ejemplo2.es").proc("P2")
+				.version("v2.3.l8").comment("Esto es un comentario").build();
+		Custodian custodian = this.custodianService.save(custodianMock);
 		assertNotNull(custodian);
+		assertEquals(custodianMock.getHash(), custodian.getHash());
+		assertEquals(custodianMock.getUri(), custodian.getUri());
+		assertEquals(custodianMock.getProc(), custodian.getProc());
+		assertEquals(custodianMock.getVersion(), custodian.getVersion());
+		assertEquals(custodianMock.getComment(), custodian.getComment());
 		this.custodianRepository.deleteById(custodian.getId());
 	}
 }
