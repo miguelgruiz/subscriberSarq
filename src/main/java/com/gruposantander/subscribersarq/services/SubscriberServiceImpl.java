@@ -36,10 +36,12 @@ public class SubscriberServiceImpl implements SubscriberService {
 	private List<Lineage> saveLineages(CustodianInputDto custodianInputDto) {
 		List<Lineage> lineageList = new ArrayList<Lineage>();
 		List<OriginDto> originDtoList = custodianInputDto.getOrigins();
-		for (OriginDto originDto: originDtoList) {
-			Lineage lineage = Lineage.builder().hash(custodianInputDto.getHash()).hashOrigin(originDto.getHash()).uri(custodianInputDto.getUri())
-					.uriOrigin(originDto.getUri()).build();
-			lineageList.add(this.lineageService.save(lineage));
+		if(originDtoList!=null) {
+			for (OriginDto originDto: originDtoList) {
+				Lineage lineage = Lineage.builder().hash(custodianInputDto.getHash()).hashOrigin(originDto.getHash()).uri(custodianInputDto.getUri())
+						.uriOrigin(originDto.getUri()).build();
+				lineageList.add(this.lineageService.save(lineage));
+			}
 		}
 		return lineageList;
 	}
