@@ -6,6 +6,7 @@ import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
 
 @RunWith(Suite.class)
-@Suite.SuiteClasses({AllRepositoriesIntegrationTests.class, AllServicesIntegrationTests.class,})
+@Suite.SuiteClasses({AllRepositoriesIntegrationTests.class, AllServicesIntegrationTests.class,
+	SubscriberSarqApplicationTests.class,})
 public class AllTests {
 }
