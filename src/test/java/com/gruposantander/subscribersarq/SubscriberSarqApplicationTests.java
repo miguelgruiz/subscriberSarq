@@ -23,7 +23,6 @@ public class SubscriberSarqApplicationTests {
 
     @Test
     public void contextLoads() {
-        assertThat(applicationContext, notNullValue());
     }
 
 }
