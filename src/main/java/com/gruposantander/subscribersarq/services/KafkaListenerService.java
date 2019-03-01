@@ -1,17 +1,16 @@
 package com.gruposantander.subscribersarq.services;
 
-import java.util.Arrays;
+import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.avro.generic.GenericData;
 import org.apache.avro.generic.GenericRecord;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.stereotype.Service;
 
 import com.gruposantander.subscribersarq.dtos.CustodianInputDto;
 import com.gruposantander.subscribersarq.dtos.OriginDto;
-import com.gruposantander.subscribersarq.models.Custodian;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -35,7 +34,20 @@ public class KafkaListenerService {
 				.proc(genericRecord.get("proc").toString())
 				.version(genericRecord.get("version").toString())
 				.comment(genericRecord.get("comment").toString())
-				.origins(null).build();
+				.origins(toOriginDtoList(genericRecord)).build();
 		return custodianInputDto;
+	}
+	
+	@SuppressWarnings({ "rawtypes", "unchecked" })
+	private List<OriginDto> toOriginDtoList(GenericRecord genericRecord) {
+		List<OriginDto> originDtoList = new ArrayList<OriginDto>();
+		GenericData.Array genericDataArray = (GenericData.Array) genericRecord.get("origins");
+		if (!genericDataArray.isEmpty()) {
+			genericDataArray.forEach(
+					(r) -> originDtoList.add(OriginDto.builder().hash(((GenericRecord) r).get("hash").toString())
+							.uri(((GenericRecord) r).get("uri").toString()).build()));
+
+		}
+		return originDtoList;
 	}
 }
