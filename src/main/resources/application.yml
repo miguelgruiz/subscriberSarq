@@ -26,7 +26,7 @@ spring:
    jpa:
       show-sql: true
    kafka:
-      topic: custodiantest
+      topic: custodian
       bootstrap-servers: localhost:9092
       consumer:
          group-id: sarq

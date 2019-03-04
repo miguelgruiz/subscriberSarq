@@ -29,11 +29,11 @@ public class KafkaListenerService {
 	
 	private CustodianInputDto toCustodianInputDto (GenericRecord genericRecord) {
 		CustodianInputDto custodianInputDto = CustodianInputDto.builder()
-				.hash(genericRecord.get("hash").toString())
-				.uri(genericRecord.get("uri").toString())
-				.proc(genericRecord.get("proc").toString())
-				.version(genericRecord.get("version").toString())
-				.comment(genericRecord.get("comment").toString())
+				.hash(this.convertToString(genericRecord.get("hash")))
+				.uri(this.convertToString(genericRecord.get("uri")))
+				.proc(this.convertToString(genericRecord.get("proc")))
+				.version(this.convertToString(genericRecord.get("version")))
+				.comment(this.convertToString(genericRecord.get("comment")))
 				.origins(toOriginDtoList(genericRecord)).build();
 		return custodianInputDto;
 	}
@@ -44,10 +44,17 @@ public class KafkaListenerService {
 		GenericData.Array genericDataArray = (GenericData.Array) genericRecord.get("origins");
 		if (!genericDataArray.isEmpty()) {
 			genericDataArray.forEach(
-					(r) -> originDtoList.add(OriginDto.builder().hash(((GenericRecord) r).get("hash").toString())
-							.uri(((GenericRecord) r).get("uri").toString()).build()));
+					(r) -> originDtoList.add(OriginDto.builder().hash(this.convertToString(((GenericRecord) r).get("hash")))
+							.uri(this.convertToString(((GenericRecord) r).get("uri"))).build()));
 
 		}
 		return originDtoList;
+	}
+	
+	public String convertToString(Object value) {
+		if (value != null) {
+			return value.toString();
+		}
+		return null;
 	}
 }
