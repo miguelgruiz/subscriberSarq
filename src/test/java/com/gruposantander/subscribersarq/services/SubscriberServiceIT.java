@@ -11,11 +11,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
-
 import java.util.Arrays;
+
+import static org.junit.Assert.*;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
@@ -41,7 +39,7 @@ public class SubscriberServiceIT {
 		assertEquals(custodianInputDto.getHash(), custodianLineages.getCustodian().getHash());
 		assertTrue(custodianLineages.getLineagesList().size() >= 2);
 		this.custodianRepository.deleteById(custodianLineages.getCustodian().getId());
-		for (Lineage lineage: custodianLineages.getLineagesList()) {
+		for (Lineage lineage : custodianLineages.getLineagesList()) {
 			this.lineageRepository.deleteById(lineage.getId());
 		}
 	}

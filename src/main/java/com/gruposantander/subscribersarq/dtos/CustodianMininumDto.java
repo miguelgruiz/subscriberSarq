@@ -12,7 +12,7 @@ import lombok.experimental.SuperBuilder;
 @NoArgsConstructor
 @AllArgsConstructor
 @JsonInclude(Include.NON_NULL)
-public class CustodianOutputDto {
+public abstract class CustodianMininumDto {
 
 	protected String hash;
 

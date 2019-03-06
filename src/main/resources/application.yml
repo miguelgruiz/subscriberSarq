@@ -1,6 +1,7 @@
 server:
    port: 9999
-   contextPath: /api
+   servlet:
+      context-path: /api
 logging:
    level:
       com:

@@ -5,9 +5,9 @@
 def artifactUrl
 def pomMap
 def credId
-def ose3Project = scib-sarq
+def ose3Project = 'scib-sarq'
 def ose3TokenID = "OPENSHIFT_TOKEN_CREDENTIAL_ID"
-def ose3Region = https://api.boae.paas.gsnetcloud.corp:8443
+def ose3Region = 'https://api.boae.paas.gsnetcloud.corp:8443'
 //List of approvers authorized to deploy in the PRE environment
 def approversPre='implantaciongcb-developer,implantaciongcb-technical-lead,implantaciongcb-product-owner'
 //List of approvers authorized to deploy in the PRO environment

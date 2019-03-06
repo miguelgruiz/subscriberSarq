@@ -16,11 +16,11 @@ import org.springframework.test.context.junit4.SpringRunner;
 public class SubscriberSarqApplicationTests {
 
 	@Autowired
-    ApplicationContext applicationContext;
+	ApplicationContext applicationContext;
 
-    @Test
-    public void contextLoads() {
-    }
+	@Test
+	public void contextLoads() {
+	}
 
 }
 

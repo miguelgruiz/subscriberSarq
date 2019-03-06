@@ -13,7 +13,7 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class CustodianInputDto extends CustodianOutputDto {
+public class CustodianInputDto extends CustodianMininumDto {
 
 	private List<OriginDto> origins;
 

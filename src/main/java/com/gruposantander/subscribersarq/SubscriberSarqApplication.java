@@ -14,11 +14,10 @@ public class SubscriberSarqApplication {
 		SpringApplication.run(SubscriberSarqApplication.class, args);
 	}
 
-	//Expose H2 database via a TCP port
+	// Expose H2 database via a TCP port for integration in local dev
 	@Bean(initMethod = "start", destroyMethod = "stop")
 	public Server inMemoryH2DatabaseaServer() throws SQLException {
-	    return Server.createTcpServer(
-	      "-tcp", "-tcpAllowOthers", "-tcpPort", "9090");
+		return Server.createTcpServer("-tcp", "-tcpAllowOthers", "-tcpPort", "9090");
 	}
 }
 
