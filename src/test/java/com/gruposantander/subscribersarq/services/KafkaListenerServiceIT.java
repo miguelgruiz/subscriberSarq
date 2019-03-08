@@ -1,0 +1,147 @@
+package com.gruposantander.subscribersarq.services;
+
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Properties;
+import java.util.UUID;
+
+import org.apache.avro.Schema;
+import org.apache.avro.generic.GenericRecord;
+import org.apache.avro.generic.GenericRecordBuilder;
+import org.apache.kafka.clients.consumer.Consumer;
+import org.apache.kafka.clients.consumer.ConsumerConfig;
+import org.apache.kafka.clients.consumer.ConsumerRecord;
+import org.apache.kafka.clients.consumer.ConsumerRecords;
+import org.apache.kafka.clients.producer.ProducerConfig;
+import org.apache.kafka.common.serialization.StringDeserializer;
+import org.apache.kafka.common.serialization.StringSerializer;
+import org.junit.AfterClass;
+import org.junit.BeforeClass;
+import org.junit.ClassRule;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.kafka.core.DefaultKafkaConsumerFactory;
+import org.springframework.kafka.core.DefaultKafkaProducerFactory;
+import org.springframework.kafka.core.KafkaTemplate;
+import org.springframework.kafka.test.EmbeddedKafkaBroker;
+import org.springframework.kafka.test.context.EmbeddedKafka;
+import org.springframework.kafka.test.rule.EmbeddedKafkaRule;
+import org.springframework.kafka.test.utils.KafkaTestUtils;
+import org.springframework.test.annotation.DirtiesContext;
+import org.springframework.test.context.junit4.SpringRunner;
+
+import io.confluent.kafka.schemaregistry.RestApp;
+import io.confluent.kafka.schemaregistry.avro.AvroCompatibilityLevel;
+import io.confluent.kafka.schemaregistry.client.MockSchemaRegistryClient;
+import io.confluent.kafka.schemaregistry.client.SchemaRegistryClient;
+import io.confluent.kafka.schemaregistry.rest.SchemaRegistryConfig;
+import io.confluent.kafka.serializers.KafkaAvroDeserializer;
+import io.confluent.kafka.serializers.KafkaAvroSerializer;
+
+@RunWith(SpringRunner.class)
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+@DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
+@EmbeddedKafka
+public class KafkaListenerServiceIT {
+
+	private static final String TOPIC = "custodian";
+	
+	private static final String KAFKA_SCHEMAS_TOPIC = "_schemas";
+	private static final String AVRO_COMPATIBILITY_TYPE = AvroCompatibilityLevel.NONE.name;
+
+	private static final String KAFKASTORE_OPERATION_TIMEOUT_MS = "10000";
+	private static final String KAFKASTORE_DEBUG = "true";
+	private static final String KAFKASTORE_INIT_TIMEOUT = "90000";
+
+	@ClassRule
+	public static EmbeddedKafkaRule embeddedKafkaRule = new EmbeddedKafkaRule(1, true, TOPIC);
+
+	private static EmbeddedKafkaBroker embeddedKafkaBroker = embeddedKafkaRule.getEmbeddedKafka();
+
+	private static Consumer<String, GenericRecord> consumer;
+	
+	private static RestApp schemaRegistry;
+	
+	@Autowired 
+	KafkaListenerService kafkaListenerService;
+		
+	@BeforeClass
+	public static void setUp() {
+		
+		final Properties schemaRegistryProps = new Properties();
+
+	    schemaRegistryProps.put(SchemaRegistryConfig.KAFKASTORE_TIMEOUT_CONFIG, KAFKASTORE_OPERATION_TIMEOUT_MS);
+	    schemaRegistryProps.put(SchemaRegistryConfig.DEBUG_CONFIG, KAFKASTORE_DEBUG);
+	    schemaRegistryProps.put(SchemaRegistryConfig.KAFKASTORE_INIT_TIMEOUT_CONFIG, KAFKASTORE_INIT_TIMEOUT);
+
+	    schemaRegistry = new RestApp(0, embeddedKafkaBroker.getZookeeperConnectionString(), KAFKA_SCHEMAS_TOPIC, AVRO_COMPATIBILITY_TYPE, schemaRegistryProps);
+	    try {
+			schemaRegistry.start();
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	    
+		Map<String, Object> consumerProps = KafkaTestUtils
+				.consumerProps("GroupKafkaEmbeddedTest" + UUID.randomUUID().toString(), "false", embeddedKafkaBroker);
+		consumerProps.put(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, "earliest");
+		consumerProps.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class);
+		consumerProps.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, KafkaAvroDeserializer.class);
+		consumerProps.put("schema.registry.url", schemaRegistry.restConnect);
+		DefaultKafkaConsumerFactory<String, GenericRecord> cf = new DefaultKafkaConsumerFactory<>(consumerProps);
+		consumer = cf.createConsumer();
+		embeddedKafkaBroker.consumeFromEmbeddedTopics(consumer, TOPIC);
+
+	}
+	
+	@AfterClass
+	public static void tearDown() {
+		consumer.close();
+		try {
+			schemaRegistry.stop();
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+	
+	@Test
+	public void testConsumer() {
+		
+		HashMap<String, Object> hashMap = new HashMap<>();
+		hashMap.put("hash", "00000004");
+		hashMap.put("uri", "http://ejemplo5.es");
+		hashMap.put("proc", "P1");
+		hashMap.put("version", "v1.0.l0");
+		hashMap.put("comment", "Esto es un comentario");
+		
+		try {
+			Schema schema = new Schema.Parser().parse(getClass().getResourceAsStream("/avro/Custodian.avsc"));
+		
+	GenericRecordBuilder builder = new GenericRecordBuilder(schema);
+		GenericRecord genericRecord = builder.build();
+		schema.getFields().forEach(r -> genericRecord.put(r.name(), hashMap.get(r.name())));
+		
+		
+		
+		Map<String, Object> senderProps = KafkaTestUtils.producerProps(embeddedKafkaBroker);
+		senderProps.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class);
+		senderProps.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, KafkaAvroSerializer.class);
+		senderProps.put("schema.registry.url", schemaRegistry.restConnect);
+		DefaultKafkaProducerFactory<String, GenericRecord> pf = new DefaultKafkaProducerFactory<>(senderProps);
+		KafkaTemplate<String, GenericRecord> template = new KafkaTemplate<>(pf, true);
+		template.setDefaultTopic(TOPIC);
+		
+			template.sendDefault(genericRecord);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		ConsumerRecords<String, GenericRecord> records = KafkaTestUtils.getRecords(consumer);
+		ConsumerRecord<String, GenericRecord> record = records.records(TOPIC).iterator().next();
+		System.out.println(record.value());
+		this.kafkaListenerService.subscribe(record.value());
+	}
+	
+}
