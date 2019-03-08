@@ -8,6 +8,7 @@ import org.junit.runners.Suite.SuiteClasses;
 @SuiteClasses({
 		CustodianServiceIT.class,
 		LineageServiceIT.class,
-		SubscriberServiceIT.class,})
+		SubscriberServiceIT.class,
+		KafkaListenerServiceIT.class,})
 public class AllServicesIntegrationTests {
 }

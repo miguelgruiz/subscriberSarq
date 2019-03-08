@@ -1,5 +1,8 @@
 package com.gruposantander.subscribersarq.services;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
@@ -30,20 +33,24 @@ import org.springframework.kafka.test.context.EmbeddedKafka;
 import org.springframework.kafka.test.rule.EmbeddedKafkaRule;
 import org.springframework.kafka.test.utils.KafkaTestUtils;
 import org.springframework.test.annotation.DirtiesContext;
+import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringRunner;
+
+import com.gruposantander.subscribersarq.repositories.CustodianRepository;
 
 import io.confluent.kafka.schemaregistry.RestApp;
 import io.confluent.kafka.schemaregistry.avro.AvroCompatibilityLevel;
-import io.confluent.kafka.schemaregistry.client.MockSchemaRegistryClient;
-import io.confluent.kafka.schemaregistry.client.SchemaRegistryClient;
 import io.confluent.kafka.schemaregistry.rest.SchemaRegistryConfig;
 import io.confluent.kafka.serializers.KafkaAvroDeserializer;
 import io.confluent.kafka.serializers.KafkaAvroSerializer;
+import lombok.extern.slf4j.Slf4j;
 
 @RunWith(SpringRunner.class)
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.NONE)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
 @EmbeddedKafka
+@TestPropertySource("classpath:test.properties")
+@Slf4j
 public class KafkaListenerServiceIT {
 
 	private static final String TOPIC = "custodian";
@@ -66,22 +73,22 @@ public class KafkaListenerServiceIT {
 	
 	@Autowired 
 	KafkaListenerService kafkaListenerService;
+	
+	@Autowired
+	private CustodianRepository custodianRepository;
 		
 	@BeforeClass
 	public static void setUp() {
-		
 		final Properties schemaRegistryProps = new Properties();
-
-	    schemaRegistryProps.put(SchemaRegistryConfig.KAFKASTORE_TIMEOUT_CONFIG, KAFKASTORE_OPERATION_TIMEOUT_MS);
-	    schemaRegistryProps.put(SchemaRegistryConfig.DEBUG_CONFIG, KAFKASTORE_DEBUG);
-	    schemaRegistryProps.put(SchemaRegistryConfig.KAFKASTORE_INIT_TIMEOUT_CONFIG, KAFKASTORE_INIT_TIMEOUT);
-
-	    schemaRegistry = new RestApp(0, embeddedKafkaBroker.getZookeeperConnectionString(), KAFKA_SCHEMAS_TOPIC, AVRO_COMPATIBILITY_TYPE, schemaRegistryProps);
-	    try {
+		try {
+			schemaRegistryProps.put(SchemaRegistryConfig.KAFKASTORE_TIMEOUT_CONFIG, KAFKASTORE_OPERATION_TIMEOUT_MS);
+			schemaRegistryProps.put(SchemaRegistryConfig.DEBUG_CONFIG, KAFKASTORE_DEBUG);
+			schemaRegistryProps.put(SchemaRegistryConfig.KAFKASTORE_INIT_TIMEOUT_CONFIG, KAFKASTORE_INIT_TIMEOUT);
+			schemaRegistry = new RestApp(0, embeddedKafkaBroker.getZookeeperConnectionString(), KAFKA_SCHEMAS_TOPIC,
+					AVRO_COMPATIBILITY_TYPE, schemaRegistryProps);
 			schemaRegistry.start();
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			log.error(e.getMessage());
 		}
 	    
 		Map<String, Object> consumerProps = KafkaTestUtils
@@ -93,55 +100,53 @@ public class KafkaListenerServiceIT {
 		DefaultKafkaConsumerFactory<String, GenericRecord> cf = new DefaultKafkaConsumerFactory<>(consumerProps);
 		consumer = cf.createConsumer();
 		embeddedKafkaBroker.consumeFromEmbeddedTopics(consumer, TOPIC);
-
 	}
 	
 	@AfterClass
 	public static void tearDown() {
-		consumer.close();
 		try {
+			consumer.close();
 			schemaRegistry.stop();
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			log.error(e.getMessage());
 		}
 	}
 	
 	@Test
-	public void testConsumer() {
-		
+	public void testSubscribe() {
+
 		HashMap<String, Object> hashMap = new HashMap<>();
 		hashMap.put("hash", "00000004");
 		hashMap.put("uri", "http://ejemplo5.es");
 		hashMap.put("proc", "P1");
 		hashMap.put("version", "v1.0.l0");
 		hashMap.put("comment", "Esto es un comentario");
-		
+
 		try {
 			Schema schema = new Schema.Parser().parse(getClass().getResourceAsStream("/avro/Custodian.avsc"));
-		
-	GenericRecordBuilder builder = new GenericRecordBuilder(schema);
-		GenericRecord genericRecord = builder.build();
-		schema.getFields().forEach(r -> genericRecord.put(r.name(), hashMap.get(r.name())));
-		
-		
-		
-		Map<String, Object> senderProps = KafkaTestUtils.producerProps(embeddedKafkaBroker);
-		senderProps.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class);
-		senderProps.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, KafkaAvroSerializer.class);
-		senderProps.put("schema.registry.url", schemaRegistry.restConnect);
-		DefaultKafkaProducerFactory<String, GenericRecord> pf = new DefaultKafkaProducerFactory<>(senderProps);
-		KafkaTemplate<String, GenericRecord> template = new KafkaTemplate<>(pf, true);
-		template.setDefaultTopic(TOPIC);
-		
+			GenericRecordBuilder builder = new GenericRecordBuilder(schema);
+			GenericRecord genericRecord = builder.build();
+			schema.getFields().forEach(r -> genericRecord.put(r.name(), hashMap.get(r.name())));
+			
+			Map<String, Object> senderProps = KafkaTestUtils.producerProps(embeddedKafkaBroker);
+			senderProps.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class);
+			senderProps.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, KafkaAvroSerializer.class);
+			senderProps.put("schema.registry.url", schemaRegistry.restConnect);
+			DefaultKafkaProducerFactory<String, GenericRecord> pf = new DefaultKafkaProducerFactory<>(senderProps);
+			KafkaTemplate<String, GenericRecord> template = new KafkaTemplate<>(pf, true);
+			template.setDefaultTopic(TOPIC);
 			template.sendDefault(genericRecord);
+
+			ConsumerRecords<String, GenericRecord> records = KafkaTestUtils.getRecords(consumer);
+			ConsumerRecord<String, GenericRecord> record = records.records(TOPIC).iterator().next();
+			
+			CustodianLineages custodianLineages = this.kafkaListenerService.subscribe(record.value());
+			assertNotNull(custodianLineages);
+			assertEquals(genericRecord.get("hash").toString(), custodianLineages.getCustodian().getHash());
+			this.custodianRepository.deleteById(custodianLineages.getCustodian().getId());
 		} catch (Exception e) {
-			e.printStackTrace();
+			log.error(e.getMessage());
 		}
-		ConsumerRecords<String, GenericRecord> records = KafkaTestUtils.getRecords(consumer);
-		ConsumerRecord<String, GenericRecord> record = records.records(TOPIC).iterator().next();
-		System.out.println(record.value());
-		this.kafkaListenerService.subscribe(record.value());
 	}
-	
+
 }

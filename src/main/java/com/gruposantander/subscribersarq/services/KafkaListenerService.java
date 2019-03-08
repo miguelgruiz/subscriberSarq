@@ -20,9 +20,9 @@ public class KafkaListenerService {
 	SubscriberService subscriberService;
 
 	@KafkaListener(topics = "${spring.kafka.topic}")
-	public void subscribe(GenericRecord genericRecord) {
+	public CustodianLineages subscribe(GenericRecord genericRecord) {
 		log.info(genericRecord.toString());
-		this.subscriberService.saveCustodianLineages(this.toCustodianInputDto(genericRecord));
+		return this.subscriberService.saveCustodianLineages(this.toCustodianInputDto(genericRecord));
 	}
 
 	private CustodianInputDto toCustodianInputDto(GenericRecord genericRecord) {

@@ -1,40 +1,40 @@
 server:
-   port: 9999
-   servlet:
-      context-path: /api
+  port: 9999
+  servlet:
+    context-path: /api
 logging:
-   level:
-      com:
-         gruposantander:
-            subscriberSarq: DEBUG
-      org:
-         hibernate: INFO   
+  level:
+    com:
+      gruposantander:
+        subscriberSarq: DEBUG
+    org:
+      hibernate: INFO   
 spring:
-   profiles:
-      active: dev
-   application:
+  profiles:
+    active: dev
+    application:
       name: subscriberSarq
-   h2:
-      console:
-         enabled: true
-         path: /h2
-   datasource:
-      platform: h2
-      url: jdbc:h2:mem:testdb
-      username: sa
-      password:
-      driver-class-name: org.h2.Driver
-   jpa:
-      show-sql: true
-   kafka:
-      topic: custodian
-      bootstrap-servers: ${spring.embedded.kafka.brokers}
-      consumer:
-         group-id: sarq
-         auto-offset-reset: earliest
-         key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
-         value-deserializer: io.confluent.kafka.serializers.KafkaAvroDeserializer
-      properties:
-         schema:
-            registry:
-               url: http://localhost:8081
+  h2:
+    console:
+      enabled: true
+      path: /h2
+  datasource:
+    platform: h2
+    url: jdbc:h2:mem:testdb
+    username: sa
+    password:
+    driver-class-name: org.h2.Driver
+  jpa:
+    show-sql: true
+  kafka:
+    topic: custodian
+    bootstrap-servers: localhost:9092
+    consumer:
+      group-id: sarq
+      auto-offset-reset: earliest
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: io.confluent.kafka.serializers.KafkaAvroDeserializer
+    properties:
+      schema:
+        registry:
+          url: http://localhost:8081
