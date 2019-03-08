@@ -20,9 +20,9 @@ public class KafkaListenerService {
 	SubscriberService subscriberService;
 
 	@KafkaListener(topics = "${spring.kafka.topic}")
-	public void subscribe(GenericRecord genericRecord) {
+	public CustodianLineages subscribe(GenericRecord genericRecord) {
 		log.info(genericRecord.toString());
-		this.subscriberService.saveCustodianLineages(this.toCustodianInputDto(genericRecord));
+		return this.subscriberService.saveCustodianLineages(this.toCustodianInputDto(genericRecord));
 	}
 
 	private CustodianInputDto toCustodianInputDto(GenericRecord genericRecord) {
@@ -37,7 +37,7 @@ public class KafkaListenerService {
 	private List<OriginDto> toOriginDtoList(GenericRecord genericRecord) {
 		List<OriginDto> originDtoList = new ArrayList<>();
 		GenericData.Array genericDataArray = (GenericData.Array) genericRecord.get("origins");
-		if (!genericDataArray.isEmpty()) {
+		if (genericDataArray!=null && !genericDataArray.isEmpty()) {
 			genericDataArray.forEach((r) -> originDtoList
 					.add(OriginDto.builder().hash(this.convertToString(((GenericRecord) r).get("hash")))
 							.uri(this.convertToString(((GenericRecord) r).get("uri"))).build()));
