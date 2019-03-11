@@ -9,6 +9,6 @@ import org.junit.runners.Suite.SuiteClasses;
 		CustodianServiceIT.class,
 		LineageServiceIT.class,
 		SubscriberServiceIT.class,
-		KafkaListenerServiceIT.class,})
+		KafkaStreamListenerIT.class,})
 public class AllServicesIntegrationTests {
 }

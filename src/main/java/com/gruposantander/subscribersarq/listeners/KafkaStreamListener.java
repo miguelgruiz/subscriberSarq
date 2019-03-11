@@ -1,28 +1,33 @@
-package com.gruposantander.subscribersarq.services;
-
-import com.gruposantander.subscribersarq.dtos.CustodianInputDto;
-import com.gruposantander.subscribersarq.dtos.OriginDto;
-import lombok.extern.slf4j.Slf4j;
-import org.apache.avro.generic.GenericData;
-import org.apache.avro.generic.GenericRecord;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.kafka.annotation.KafkaListener;
-import org.springframework.stereotype.Service;
+package com.gruposantander.subscribersarq.listeners;
 
 import java.util.ArrayList;
 import java.util.List;
 
-@Service
+import org.apache.avro.generic.GenericData;
+import org.apache.avro.generic.GenericRecord;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cloud.stream.annotation.StreamListener;
+import org.springframework.stereotype.Component;
+
+import com.gruposantander.subscribersarq.channels.KafkaStreamChannel;
+import com.gruposantander.subscribersarq.dtos.CustodianInputDto;
+import com.gruposantander.subscribersarq.dtos.OriginDto;
+import com.gruposantander.subscribersarq.services.CustodianLineages;
+import com.gruposantander.subscribersarq.services.SubscriberService;
+
+import lombok.extern.slf4j.Slf4j;
+
+@Component
 @Slf4j
-public class KafkaListenerService {
+public class KafkaStreamListener {
 
 	@Autowired
 	SubscriberService subscriberService;
 
-	@KafkaListener(topics = "${spring.kafka.topic}")
-	public CustodianLineages subscribe(GenericRecord genericRecord) {
+	@StreamListener(KafkaStreamChannel.INPUT)
+	public void subscribe(GenericRecord genericRecord) {
 		log.info(genericRecord.toString());
-		return this.subscriberService.saveCustodianLineages(this.toCustodianInputDto(genericRecord));
+		this.subscriberService.saveCustodianLineages(this.toCustodianInputDto(genericRecord));
 	}
 
 	private CustodianInputDto toCustodianInputDto(GenericRecord genericRecord) {

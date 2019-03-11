@@ -26,15 +26,24 @@ spring:
     driver-class-name: org.h2.Driver
   jpa:
     show-sql: true
-  kafka:
-    topic: custodian
-    bootstrap-servers: localhost:9092
-    consumer:
-      group-id: sarq
-      auto-offset-reset: earliest
-      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
-      value-deserializer: io.confluent.kafka.serializers.KafkaAvroDeserializer
-    properties:
-      schema:
-        registry:
-          url: http://localhost:8081
+  cloud:
+    stream:
+      schemaRegistryClient:
+        endpoint: http://localhost:8081
+      kafka:
+        binder:
+          brokers: PLAINTEXT://localhost:9092
+          useNativeDecoding: true
+        bindings:
+          subscribe:
+            consumer:
+              configuration:
+                schema.registry.url: http://localhost:8081
+                specific.avro.reader: true
+                key.deserializer: org.apache.kafka.common.serialization.StringDeserializer
+                value.deserializer: io.confluent.kafka.serializers.KafkaAvroDeserializer
+      bindings:
+        subscribe:
+          contentType: application/*+avro
+          destination: custodian
+          group: sarq      

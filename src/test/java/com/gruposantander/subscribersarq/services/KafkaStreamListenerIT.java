@@ -4,6 +4,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import java.util.UUID;
@@ -36,6 +37,8 @@ import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringRunner;
 
+import com.gruposantander.subscribersarq.listeners.KafkaStreamListener;
+import com.gruposantander.subscribersarq.models.Custodian;
 import com.gruposantander.subscribersarq.repositories.CustodianRepository;
 
 import io.confluent.kafka.schemaregistry.RestApp;
@@ -51,7 +54,7 @@ import lombok.extern.slf4j.Slf4j;
 @EmbeddedKafka
 @TestPropertySource("classpath:test.properties")
 @Slf4j
-public class KafkaListenerServiceIT {
+public class KafkaStreamListenerIT {
 
 	private static final String TOPIC = "custodian";
 	
@@ -72,7 +75,7 @@ public class KafkaListenerServiceIT {
 	private static RestApp schemaRegistry;
 	
 	@Autowired 
-	KafkaListenerService kafkaListenerService;
+	KafkaStreamListener kafkaStreamListener;
 	
 	@Autowired
 	private CustodianRepository custodianRepository;
@@ -123,7 +126,7 @@ public class KafkaListenerServiceIT {
 		hashMap.put("comment", "Esto es un comentario");
 
 		try {
-			Schema schema = new Schema.Parser().parse(getClass().getResourceAsStream("/avro/Custodian.avsc"));
+			Schema schema = new Schema.Parser().parse(getClass().getResourceAsStream("/avro/com.gruposantander.sarq.schemas.Custodian.avsc"));
 			GenericRecordBuilder builder = new GenericRecordBuilder(schema);
 			GenericRecord genericRecord = builder.build();
 			schema.getFields().forEach(r -> genericRecord.put(r.name(), hashMap.get(r.name())));
@@ -140,10 +143,12 @@ public class KafkaListenerServiceIT {
 			ConsumerRecords<String, GenericRecord> records = KafkaTestUtils.getRecords(consumer);
 			ConsumerRecord<String, GenericRecord> record = records.records(TOPIC).iterator().next();
 			
-			CustodianLineages custodianLineages = this.kafkaListenerService.subscribe(record.value());
-			assertNotNull(custodianLineages);
-			assertEquals(genericRecord.get("hash").toString(), custodianLineages.getCustodian().getHash());
-			this.custodianRepository.deleteById(custodianLineages.getCustodian().getId());
+			this.kafkaStreamListener.subscribe(record.value());
+			List<Custodian> custodianList = custodianRepository.findAll();
+			Integer index = custodianList.size()-1;
+			assertNotNull(custodianRepository.findAll().get(index));
+			assertEquals(genericRecord.get("hash").toString(), custodianRepository.findAll().get(index).getHash());
+			this.custodianRepository.deleteById(custodianRepository.findAll().get(index).getId());
 		} catch (Exception e) {
 			log.error(e.getMessage());
 		}
