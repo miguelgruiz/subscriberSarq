@@ -12,7 +12,6 @@ import org.springframework.stereotype.Component;
 import com.gruposantander.subscribersarq.channels.KafkaStreamChannel;
 import com.gruposantander.subscribersarq.dtos.CustodianInputDto;
 import com.gruposantander.subscribersarq.dtos.OriginDto;
-import com.gruposantander.subscribersarq.services.CustodianLineages;
 import com.gruposantander.subscribersarq.services.SubscriberService;
 
 import lombok.extern.slf4j.Slf4j;

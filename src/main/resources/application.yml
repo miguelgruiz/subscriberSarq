@@ -46,4 +46,4 @@ spring:
         subscribe:
           contentType: application/*+avro
           destination: custodian
-          group: sarq      
+          group: sarq   

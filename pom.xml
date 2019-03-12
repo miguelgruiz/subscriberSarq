@@ -24,6 +24,11 @@
 
 	<dependencies>
 		<dependency>
+			 <groupId>com.gruposantander</groupId>
+	  		<artifactId>sarqAvroSchemas</artifactId>
+	  		<version>0.0.1-SNAPSHOT</version>
+  		</dependency>
+		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-actuator</artifactId>
 		</dependency>
@@ -167,6 +172,7 @@
 				<configuration>
 					<includes>
 						<include>**/*FunctionalTesting</include>
+						<include>**/*Test.java</include>
 					</includes>
 				</configuration>
 			</plugin>
@@ -202,7 +208,7 @@
                         </goals>
                         <configuration>
                             <schemaRegistryUrls>
-                                <param>http://localhost:8081</param>
+                                <param>${schema.registry.url}</param>
                             </schemaRegistryUrls>
                             <outputDirectory>${project.basedir}/src/main/resources/avro</outputDirectory>
                             <subjectPatterns>
@@ -246,6 +252,22 @@
 			<name>Confluent</name>
 			<url>http://packages.confluent.io/maven/</url>
 		</repository>
-	</repositories>
+	</repositories> 
+	
+	<!-- <pluginRepositories>
+		<pluginRepository>
+			<name>Serenity Maven Central</name>
+            <id>serenity_maven_central</id>
+            <url>https://nexus.alm.gsnetcloud.corp/repository/maven-public/</url>
+		</pluginRepository>
+	</pluginRepositories>
+	
+	 <repositories>
+        <repository>
+            <name>Serenity Maven Central</name>
+            <id>serenity_maven_central</id>
+            <url>https://nexus.alm.gsnetcloud.corp/repository/maven-public/</url>
+        </repository>
+    </repositories>  -->
 	
 </project>

@@ -13,6 +13,11 @@
     "doc" : "uri",
     "default" : null
   }, {
+    "name" : "test",
+    "type" : [ "null", "string" ],
+    "doc" : "test",
+    "default" : null
+  }, {
     "name" : "proc",
     "type" : [ "null", "string" ],
     "doc" : "proc",
@@ -34,7 +39,6 @@
       "items" : {
         "type" : "record",
         "name" : "Origin",
-        "namespace" : "com.santander.sarq.schemas",
         "fields" : [ {
           "name" : "hash",
           "type" : [ "null", "string" ],

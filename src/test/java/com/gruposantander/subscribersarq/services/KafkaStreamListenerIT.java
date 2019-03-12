@@ -126,7 +126,16 @@ public class KafkaStreamListenerIT {
 		hashMap.put("comment", "Esto es un comentario");
 
 		try {
-			Schema schema = new Schema.Parser().parse(getClass().getResourceAsStream("/avro/com.gruposantander.sarq.schemas.Custodian.avsc"));
+			Schema schema = new Schema.Parser().parse("{\"type\":\"record\",\"name\":\"Custodian\",\"namespace\":\"com.gruposantander.sarq.schemas\","
+					+ "\"fields\":[{\"name\":\"hash\",\"type\":[\"null\",\"string\"],\"doc\":\"Hash\",\"default\":null},"
+					+ "{\"name\":\"uri\",\"type\":[\"null\",\"string\"],\"doc\":\"uri\",\"default\":null},"
+					+ "{\"name\":\"proc\",\"type\":[\"null\",\"string\"],\"doc\":\"proc\",\"default\":null},"
+					+ "{\"name\":\"version\",\"type\":[\"null\",\"string\"],\"doc\":\"version\",\"default\":null},"
+					+ "{\"name\":\"comment\",\"type\":[\"null\",\"string\"],\"doc\":\"comment\",\"default\":null},"
+					+ "{\"name\":\"origins\",\"type\":[\"null\",{\"type\":\"array\",\"items\":{\"type\":\"record\","
+					+ "\"name\":\"Origin\",\"namespace\":\"com.gruposantander.sarq.schemas\","
+					+ "\"fields\":[{\"name\":\"hash\",\"type\":[\"null\",\"string\"],\"doc\":\"Hash\",\"default\":null},"
+					+ "{\"name\":\"uri\",\"type\":[\"null\",\"string\"],\"doc\":\"uri\",\"default\":null}]}}],\"doc\":\"List of origins\",\"default\":null}]}");
 			GenericRecordBuilder builder = new GenericRecordBuilder(schema);
 			GenericRecord genericRecord = builder.build();
 			schema.getFields().forEach(r -> genericRecord.put(r.name(), hashMap.get(r.name())));
@@ -151,6 +160,7 @@ public class KafkaStreamListenerIT {
 			this.custodianRepository.deleteById(custodianRepository.findAll().get(index).getId());
 		} catch (Exception e) {
 			log.error(e.getMessage());
+			throw e; 
 		}
 	}
 
