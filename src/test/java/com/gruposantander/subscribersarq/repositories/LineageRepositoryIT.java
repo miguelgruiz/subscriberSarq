@@ -13,7 +13,6 @@ import org.springframework.test.context.junit4.SpringRunner;
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.NONE)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
 @EmbeddedKafka
-@TestPropertySource("classpath:test.properties")
 public class LineageRepositoryIT {
 
 	@Autowired

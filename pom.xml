@@ -136,6 +136,7 @@
 				<configuration>
 					<includes>
 						<include>**/*FunctionalTesting</include>
+						<include>**/AllTests.java</include>
 					</includes>
 				</configuration>
 			</plugin>
