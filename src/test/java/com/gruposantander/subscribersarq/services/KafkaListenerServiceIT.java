@@ -50,6 +50,7 @@ import lombok.extern.slf4j.Slf4j;
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.NONE)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
 @EmbeddedKafka
+@TestPropertySource(locations = "classpath:test.properties")
 @Slf4j
 public class KafkaListenerServiceIT {
 

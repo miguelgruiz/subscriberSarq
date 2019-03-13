@@ -22,6 +22,7 @@ import static org.junit.Assert.*;
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.NONE)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
 @EmbeddedKafka
+@TestPropertySource(locations = "classpath:test.properties")
 public class SubscriberServiceIT {
 
 	@Autowired
