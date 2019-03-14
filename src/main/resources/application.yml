@@ -12,7 +12,7 @@ logging:
 spring:
   profiles:
     active: dev
-    application:
+  application:
       name: subscriberSarq
   h2:
     console:
