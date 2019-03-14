@@ -1,14 +1,12 @@
 package com.gruposantander.subscribersarq.services;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-
-import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Properties;
-import java.util.UUID;
-
+import com.gruposantander.subscribersarq.repositories.CustodianRepository;
+import io.confluent.kafka.schemaregistry.RestApp;
+import io.confluent.kafka.schemaregistry.avro.AvroCompatibilityLevel;
+import io.confluent.kafka.schemaregistry.rest.SchemaRegistryConfig;
+import io.confluent.kafka.serializers.KafkaAvroDeserializer;
+import io.confluent.kafka.serializers.KafkaAvroSerializer;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.avro.Schema;
 import org.apache.avro.generic.GenericRecord;
 import org.apache.avro.generic.GenericRecordBuilder;
@@ -37,14 +35,14 @@ import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringRunner;
 
-import com.gruposantander.subscribersarq.repositories.CustodianRepository;
+import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Properties;
+import java.util.UUID;
 
-import io.confluent.kafka.schemaregistry.RestApp;
-import io.confluent.kafka.schemaregistry.avro.AvroCompatibilityLevel;
-import io.confluent.kafka.schemaregistry.rest.SchemaRegistryConfig;
-import io.confluent.kafka.serializers.KafkaAvroDeserializer;
-import io.confluent.kafka.serializers.KafkaAvroSerializer;
-import lombok.extern.slf4j.Slf4j;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.NONE)
@@ -55,12 +53,15 @@ import lombok.extern.slf4j.Slf4j;
 public class KafkaListenerServiceIT {
 
 	private static final String TOPIC = "custodian";
-	
+
 	private static final String KAFKA_SCHEMAS_TOPIC = "_schemas";
+
 	private static final String AVRO_COMPATIBILITY_TYPE = AvroCompatibilityLevel.NONE.name;
 
 	private static final String KAFKASTORE_OPERATION_TIMEOUT_MS = "10000";
+
 	private static final String KAFKASTORE_DEBUG = "true";
+
 	private static final String KAFKASTORE_INIT_TIMEOUT = "90000";
 
 	@ClassRule
@@ -69,15 +70,15 @@ public class KafkaListenerServiceIT {
 	private static EmbeddedKafkaBroker embeddedKafkaBroker = embeddedKafkaRule.getEmbeddedKafka();
 
 	private static Consumer<String, GenericRecord> consumer;
-	
+
 	private static RestApp schemaRegistry;
-	
-	@Autowired 
-	KafkaListenerService kafkaListenerService;
-	
+
+	@Autowired
+	private KafkaListenerServiceImpl kafkaListenerService;
+
 	@Autowired
 	private CustodianRepository custodianRepository;
-		
+
 	@BeforeClass
 	public static void setUp() {
 		final Properties schemaRegistryProps = new Properties();
@@ -91,7 +92,7 @@ public class KafkaListenerServiceIT {
 		} catch (Exception e) {
 			log.error(e.getMessage());
 		}
-	    
+
 		Map<String, Object> consumerProps = KafkaTestUtils
 				.consumerProps("GroupKafkaEmbeddedTest" + UUID.randomUUID().toString(), "false", embeddedKafkaBroker);
 		consumerProps.put(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, "earliest");
@@ -102,7 +103,7 @@ public class KafkaListenerServiceIT {
 		consumer = cf.createConsumer();
 		embeddedKafkaBroker.consumeFromEmbeddedTopics(consumer, TOPIC);
 	}
-	
+
 	@AfterClass
 	public static void tearDown() {
 		try {
@@ -112,7 +113,7 @@ public class KafkaListenerServiceIT {
 			log.error(e.getMessage());
 		}
 	}
-	
+
 	@Test
 	public void testSubscribe() throws IOException {
 
@@ -144,7 +145,7 @@ public class KafkaListenerServiceIT {
 		assertNotNull(custodianLineages);
 		assertEquals(genericRecord.get("hash").toString(), custodianLineages.getCustodian().getHash());
 		this.custodianRepository.deleteById(custodianLineages.getCustodian().getId());
-		
+
 	}
 
 }
