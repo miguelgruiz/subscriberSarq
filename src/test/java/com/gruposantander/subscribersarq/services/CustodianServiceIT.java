@@ -32,14 +32,14 @@ public class CustodianServiceIT {
 	public void testSave() {
 
 		Custodian custodianMock = Custodian.builder().hash("0000002").uri("http://ejemplo2.es").proc("P2").version("v2.3.l8")
-				.comment("Esto es un comentario").build();
+				.information("Esto es un comentario").build();
 		Custodian custodian = this.custodianService.save(custodianMock);
 		assertNotNull(custodian);
 		assertEquals(custodianMock.getHash(), custodian.getHash());
 		assertEquals(custodianMock.getUri(), custodian.getUri());
 		assertEquals(custodianMock.getProc(), custodian.getProc());
 		assertEquals(custodianMock.getVersion(), custodian.getVersion());
-		assertEquals(custodianMock.getComment(), custodian.getComment());
+		assertEquals(custodianMock.getInformation(), custodian.getInformation());
 		this.custodianRepository.deleteById(custodian.getId());
 	}
 }

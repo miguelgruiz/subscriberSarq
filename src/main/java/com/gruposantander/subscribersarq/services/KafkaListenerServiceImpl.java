@@ -28,7 +28,7 @@ public class KafkaListenerServiceImpl {
 	private CustodianInputDto toCustodianInputDto(GenericRecord genericRecord) {
 		CustodianInputDto custodianInputDto = CustodianInputDto.builder().hash(this.convertToString(genericRecord.get("hash")))
 				.uri(this.convertToString(genericRecord.get("uri"))).proc(this.convertToString(genericRecord.get("proc")))
-				.version(this.convertToString(genericRecord.get("version"))).comment(this.convertToString(genericRecord.get("comment")))
+				.version(this.convertToString(genericRecord.get("version"))).information(this.convertToString(genericRecord.get("information")))
 				.origins(toOriginDtoList(genericRecord)).build();
 		return custodianInputDto;
 	}

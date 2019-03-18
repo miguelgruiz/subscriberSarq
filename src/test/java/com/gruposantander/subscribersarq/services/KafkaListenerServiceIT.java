@@ -122,7 +122,7 @@ public class KafkaListenerServiceIT {
 		hashMap.put("uri", "http://ejemplo5.es");
 		hashMap.put("proc", "P1");
 		hashMap.put("version", "v1.0.l0");
-		hashMap.put("comment", "Esto es un comentario");
+		hashMap.put("information", "Esto es un comentario");
 
 		Schema schema = new Schema.Parser().parse(getClass().getResourceAsStream("/avro/Custodian.avsc"));
 		GenericRecordBuilder builder = new GenericRecordBuilder(schema);

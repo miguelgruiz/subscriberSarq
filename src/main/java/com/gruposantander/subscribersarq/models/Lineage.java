@@ -9,6 +9,7 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.SequenceGenerator;
 
 @Data
 @Builder
@@ -18,7 +19,8 @@ import javax.persistence.Id;
 public class Lineage {
 
 	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "LINEAGE_SEQ")
+    @SequenceGenerator(sequenceName = "lineage_seq", allocationSize = 1, name = "LINEAGE_SEQ")
 	private Integer id;
 
 	private String hash;

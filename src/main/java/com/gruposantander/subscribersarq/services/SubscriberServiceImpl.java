@@ -28,7 +28,7 @@ public class SubscriberServiceImpl implements SubscriberService {
 
 	private Custodian saveCustodian(CustodianInputDto custodianInputDto) {
 		Custodian custodian = Custodian.builder().hash(custodianInputDto.getHash()).uri(custodianInputDto.getUri())
-				.proc(custodianInputDto.getProc()).version(custodianInputDto.getVersion()).comment(custodianInputDto.getComment()).build();
+				.proc(custodianInputDto.getProc()).version(custodianInputDto.getVersion()).information(custodianInputDto.getInformation()).build();
 		return this.custodianService.save(custodian);
 	}
 

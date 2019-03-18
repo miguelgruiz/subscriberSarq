@@ -40,12 +40,12 @@
       "default": null
     },
     {
-      "name": "comment",
+      "name": "information",
       "type": [
         "null",
         "string"
       ],
-      "doc": "comment",
+      "doc": "information",
       "default": null
     },
     {

@@ -22,6 +22,6 @@ public abstract class CustodianMininumDto {
 
 	protected String version;
 
-	protected String comment;
+	protected String information;
 
 }

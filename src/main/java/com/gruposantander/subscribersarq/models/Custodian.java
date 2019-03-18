@@ -16,7 +16,8 @@ import java.util.Date;
 public class Custodian {
 
 	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "CUSTODIAN_SEQ")
+    @SequenceGenerator(sequenceName = "custodian_seq", allocationSize = 1, name = "CUSTODIAN_SEQ")
 	private Integer id;
 
 	private String hash;
@@ -31,6 +32,6 @@ public class Custodian {
 	@Temporal(TemporalType.TIMESTAMP)
 	private Date timestamp;
 
-	private String comment;
+	private String information;
 
 }
