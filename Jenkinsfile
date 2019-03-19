@@ -23,7 +23,7 @@ pipeline {
         // Release branch name
         MASTER_BRANCH = 'master'
         // CI Branch name
-        INTEGRATION_BRANCH = 'develop'
+        INTEGRATION_BRANCH = 'development'
     }
     parameters {
         booleanParam(name: 'IS_RELEASE', defaultValue: false, description: 'Is a release build?')
@@ -43,7 +43,7 @@ pipeline {
         stage('Build') {
             when {
                 not { expression { return params.DEPLOY_ONLY } }
-                }
+            }
             steps {
                 // Sets gitlab build status to 'running'
                 updateGitlabCommitStatus name: 'build', state: 'running'
@@ -53,16 +53,16 @@ pipeline {
                     pomMap = almMavenReadInfoFromPom()
                     if (params.IS_RELEASE) {
                         if (BRANCH_NAME != INTEGRATION_BRANCH) {
-                         // Invalid release branch
+                            // Invalid release branch
                             error("Release process must be executed from integration branch: " + INTEGRATION_BRANCH )
-                         }
+                        }
                         almMavenGitFlowReleaseStart(env.INTEGRATION_BRANCH, env.MASTER_BRANCH)
                         // sets the build name
                         currentBuild.displayName = "${pomMap['POM_ARTIFACTID']}:${pomMap['POM_VERSION']}-${env.BUILD_ID} (Release Build)"
                     } else {
                         // sets the build name
                         currentBuild.displayName = "${pomMap['POM_ARTIFACTID']}:${pomMap['POM_VERSION']}-${env.BUILD_ID}"
-                    }                   
+                    }
                 }
                 // executes mvn clean compile goal
                 almMaven(goal: 'clean verify')
@@ -118,14 +118,14 @@ pipeline {
                 }
             }
             steps {
-                 // merges branches and pushes changes and the tag
-                 // see https://gitlab.alm.gsnetcloud.corp/serenity-alm/pipeline-library/wikis/vars#almmavengitflowreleaseend
-                 almMavenGitFlowReleaseEnd(INTEGRATION_BRANCH, MASTER_BRANCH)            
+                // merges branches and pushes changes and the tag
+                // see https://gitlab.alm.gsnetcloud.corp/serenity-alm/pipeline-library/wikis/vars#almmavengitflowreleaseend
+                almMavenGitFlowReleaseEnd(INTEGRATION_BRANCH, MASTER_BRANCH)
             }
         }
         stage("Deploy DEV") {
-        // deploys the artifact in OpenShift
-        // only Integration branch and Master branch builds are deployed
+            // deploys the artifact in OpenShift
+            // only Integration branch and Master branch builds are deployed
             when {
                 allOf {
                     expression { return !params.IS_RELEASE }
@@ -136,8 +136,8 @@ pipeline {
                             expression { return params.DEPLOY_ONLY }
                             expression { params.DEPLOY_ENVIRONMENT == "DEV" }
                         }
-                             
-                    }           
+
+                    }
                 }
             }
             agent {
@@ -145,14 +145,14 @@ pipeline {
                 label 'ose3-deploy'
             }
             steps {
-                script {                 
+                script {
                     almOpenshiftDeploy(
-                        ose3Region: "${ose3Region}",
-                        ose3Project: "${ose3Project}-dev",
-                        ose3Application: "${pomMap['POM_ARTIFACTID']}",
-                        ose3Template: 'javase',
-                        ose3TokenCredentialId: "${ose3TokenID}-DEV",
-                        ose3TemplateParams: [ARTIFACT_URL: artifactUrl, JAVA_OPTS_EXT: "-Dspring.profiles.active=dev"]
+                            ose3Region: "${ose3Region}",
+                            ose3Project: "${ose3Project}-dev",
+                            ose3Application: "${pomMap['POM_ARTIFACTID']}",
+                            ose3Template: 'javase',
+                            ose3TokenCredentialId: "${ose3TokenID}-DEV",
+                            ose3TemplateParams: [ARTIFACT_URL: artifactUrl, JAVA_OPTS_EXT: "-Dspring.profiles.active=dev"]
                     )
                 }
             }
@@ -166,7 +166,7 @@ pipeline {
                         expression { return params.DEPLOY_ONLY }
                         expression { params.DEPLOY_ENVIRONMENT == "PRE-PRO" }
                     }
-                }           
+                }
             }
             agent none
             steps {
@@ -182,8 +182,8 @@ pipeline {
             }
         }
         stage("Deploy PRE") {
-        // deploys the artifact in OpenShift
-        // only Master branch builds are deployed to PRE
+            // deploys the artifact in OpenShift
+            // only Master branch builds are deployed to PRE
             when {
                 expression { return !params.IS_RELEASE }
                 anyOf {
@@ -192,21 +192,21 @@ pipeline {
                         expression { return params.DEPLOY_ONLY }
                         expression { params.DEPLOY_ENVIRONMENT == "PRE-PRO" }
                     }
-                }           
+                }
             }
             agent {
                 // executes this stage in openshift agent
                 label 'ose3-deploy'
             }
             steps {
-                script {              
+                script {
                     almOpenshiftDeploy(
-                        ose3Region: "${ose3Region}",
-                        ose3Project: "${ose3Project}-pre",
-                        ose3Application: "${pomMap['POM_ARTIFACTID']}",
-                        ose3Template: 'javase',
-                        ose3TokenCredentialId: credId,
-                        ose3TemplateParams: [ARTIFACT_URL: artifactUrl, JAVA_OPTS_EXT: "-Dspring.profiles.active=pre"]
+                            ose3Region: "${ose3Region}",
+                            ose3Project: "${ose3Project}-pre",
+                            ose3Application: "${pomMap['POM_ARTIFACTID']}",
+                            ose3Template: 'javase',
+                            ose3TokenCredentialId: credId,
+                            ose3TemplateParams: [ARTIFACT_URL: artifactUrl, JAVA_OPTS_EXT: "-Dspring.profiles.active=pre"]
                     )
                 }
             }
@@ -220,7 +220,7 @@ pipeline {
                         expression { return params.DEPLOY_ONLY }
                         expression { params.DEPLOY_ENVIRONMENT == "PRE-PRO" }
                     }
-                }           
+                }
             }
             agent none
             steps {
@@ -236,8 +236,8 @@ pipeline {
             }
         }
         stage("Deploy PRO") {
-        // deploys the artifact in OpenShift
-        // only Master branch builds are deployed to PRO
+            // deploys the artifact in OpenShift
+            // only Master branch builds are deployed to PRO
             when {
                 expression { return !params.IS_RELEASE }
                 anyOf {
@@ -246,21 +246,21 @@ pipeline {
                         expression { return params.DEPLOY_ONLY }
                         expression { params.DEPLOY_ENVIRONMENT == "PRE-PRO" }
                     }
-                }           
+                }
             }
             agent {
                 // executes this stage in openshift agent
                 label 'ose3-deploy'
             }
             steps {
-                script {              
+                script {
                     almOpenshiftDeploy(
-                        ose3Region: "${ose3Region}",
-                        ose3Project: "${ose3Project}-pro",
-                        ose3Application: "${pomMap['POM_ARTIFACTID']}",
-                        ose3Template: 'javase',
-                        ose3TokenCredentialId: credId,
-                        ose3TemplateParams: [ARTIFACT_URL: artifactUrl, JAVA_OPTS_EXT: "-Dspring.profiles.active=pro"]
+                            ose3Region: "${ose3Region}",
+                            ose3Project: "${ose3Project}-pro",
+                            ose3Application: "${pomMap['POM_ARTIFACTID']}",
+                            ose3Template: 'javase',
+                            ose3TokenCredentialId: credId,
+                            ose3TemplateParams: [ARTIFACT_URL: artifactUrl, JAVA_OPTS_EXT: "-Dspring.profiles.active=pro"]
                     )
                 }
             }
@@ -274,6 +274,6 @@ pipeline {
         changed {
             //send notification
             almMail()
-        } 
+        }
     }
 }
