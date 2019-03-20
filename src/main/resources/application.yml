@@ -38,3 +38,10 @@ spring:
       schema:
         registry:
           url: http://localhost:8081
+  cache:
+    type: redis
+    cache-names: custodiansCache, lineagesCache
+  redis:
+    host: localhost
+    port: 6379
+    password:
