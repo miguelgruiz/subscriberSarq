@@ -32,9 +32,7 @@ spring:
     consumer:
       group-id: sarq
       auto-offset-reset: earliest
-      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
-      value-deserializer: io.confluent.kafka.serializers.KafkaAvroDeserializer
     properties:
       schema:
         registry:
-          url: http://localhost:8081
+          url: http://localhost:8081   
