@@ -1,12 +1,15 @@
 package com.gruposantander.subscribersarq.services;
 
-import com.gruposantander.subscribersarq.repositories.CustodianRepository;
-import io.confluent.kafka.schemaregistry.RestApp;
-import io.confluent.kafka.schemaregistry.avro.AvroCompatibilityLevel;
-import io.confluent.kafka.schemaregistry.rest.SchemaRegistryConfig;
-import io.confluent.kafka.serializers.KafkaAvroDeserializer;
-import io.confluent.kafka.serializers.KafkaAvroSerializer;
-import lombok.extern.slf4j.Slf4j;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Properties;
+import java.util.UUID;
+
 import org.apache.avro.Schema;
 import org.apache.avro.generic.GenericRecord;
 import org.apache.avro.generic.GenericRecordBuilder;
@@ -35,14 +38,14 @@ import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringRunner;
 
-import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Properties;
-import java.util.UUID;
+import com.gruposantander.subscribersarq.repositories.CustodianRepository;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
+import io.confluent.kafka.schemaregistry.RestApp;
+import io.confluent.kafka.schemaregistry.avro.AvroCompatibilityLevel;
+import io.confluent.kafka.schemaregistry.rest.SchemaRegistryConfig;
+import io.confluent.kafka.serializers.KafkaAvroDeserializer;
+import io.confluent.kafka.serializers.KafkaAvroSerializer;
+import lombok.extern.slf4j.Slf4j;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.NONE)
@@ -128,6 +131,18 @@ public class KafkaListenerServiceIT {
 		GenericRecordBuilder builder = new GenericRecordBuilder(schema);
 		GenericRecord genericRecord = builder.build();
 		schema.getFields().forEach(r -> genericRecord.put(r.name(), hashMap.get(r.name())));
+
+		HashMap<String, Object> hashMapOrigins = new HashMap<>();
+		hashMapOrigins.put("hash", "000002");
+		hashMapOrigins.put("uri", "http://ejemplo2.es");
+		
+		Schema schemaOrigins = schema.getField("origins").schema().getElementType();
+		GenericRecordBuilder builderOrigin = new GenericRecordBuilder(schemaOrigins);
+		GenericRecord genericRecordOrigin = builderOrigin.build();
+		schemaOrigins.getFields().forEach(r -> genericRecordOrigin.put(r.name(), hashMapOrigins.get(r.name())));
+		ArrayList<GenericRecord> genericRecordOrigins = new ArrayList<>();
+		genericRecordOrigins.add(genericRecordOrigin);
+		genericRecord.put("origins", genericRecordOrigins);
 
 		Map<String, Object> senderProps = KafkaTestUtils.producerProps(embeddedKafkaBroker);
 		senderProps.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class);

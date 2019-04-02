@@ -50,8 +50,7 @@
     },
     {
       "name": "origins",
-      "type": [
-        "null",
+      "type":
         {
           "type": "array",
           "items": {
@@ -79,8 +78,7 @@
               }
             ]
           }
-        }
-      ],
+        },
       "doc": "List of origins",
       "default": null
     }
